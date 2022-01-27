@@ -31,7 +31,11 @@ while [[ $# -gt 0 ]]; do
                 show_options
                 exit 1
             fi
-            NEW_THEME="$2"
+            if [[ $2 =~ .*".zsh-theme" ]]; then
+                NEW_THEME="${2%%.*}"
+            else
+                NEW_THEME="$2"
+            fi
             shift 2
             ;;
         --skip-fonts)
