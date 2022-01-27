@@ -19,6 +19,9 @@ Installing themes:
    # install all fonts and themes
    ./install.sh
 
-   # to install and activate specific theme
+    # install themes but not fonts
+   ./install.sh --skip-fonts
+
+   # install and activate specific theme
    ./install.sh -t uown
    ```

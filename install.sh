@@ -14,42 +14,67 @@ FONT_INSTALL_DIR="$HOME/.local/share/fonts"
 THEME_INSTALL_DIR="$HOME/.oh-my-zsh/themes"
 ZSH_CONFIG="$HOME/.zshrc"
 
-echo -e $BLUE"Installing fonts..."$RESET
-eval "find $FONTS -name '*.[o,t]t[fc]' -type f -print0 | xargs -0 -I % cp '%' $FONT_INSTALL_DIR"
-# Reset font cache 
-if command -v fc-cache @>/dev/null ; then
-    fc-cache -f $FONT_INSTALL_DIR
-fi
-echo -e $GREEN"Fonts installed"$RESET
-
-echo -e $BLUE"Installing themes..."$RESET
-eval "cp $THEMES/* $THEME_INSTALL_DIR"
-echo -e $GREEN"Themes installed"$RESET
 NEW_THEME=""
+SKIP_FONTS="false"
+
+show_options() {
+    echo -e $White"Available options:"
+    echo -e $White"  -t, --theme \t\t Provide theme name. E.g. '-t uown'"
+    echo -e $White"      --skip-fonts \t Skip font installation."
+}
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -t | --theme)
-            if [ -z "$2" ]; then
+            if [ -z "$2" ] || [[ "$2" =~ "--".* ]]; then
                 echo -e $RED"Theme not provided."$RESET
-                echo -e $White"Available options:"
-                echo -e $White"  -t, --theme \t Theme name. E.g. '-t uown'"
+                show_options
                 exit 1
             fi
             NEW_THEME="$2"
+            shift 2
+            ;;
+        --skip-fonts)
+            SKIP_FONTS="true"
+            shift 1
             ;;
         *)
-            echo -e $RED"Invalid option '$1'."$RESET
-            echo -e $White"Available options:"
-            echo -e $White"  -t, --theme \t Theme name. E.g. '-t uown'"
-            exit 1
+            break
             ;;
     esac
-    break
 done
+
+if [[ $SKIP_FONTS == 'false' ]]; then
+    echo -e $BLUE"Installing fonts..."$RESET
+    eval "find $FONTS -name '*.[o,t]t[fc]' -type f -print0 | xargs -0 -I % cp '%' $FONT_INSTALL_DIR"
+    # Reset font cache 
+    if command -v fc-cache @>/dev/null ; then
+        fc-cache -f $FONT_INSTALL_DIR
+    fi
+    echo -e $GREEN"Fonts installed"$RESET
+fi
+
+install_themes() {
+    THEME='*'
+    if [ "$1" != "" ]; then
+        THEME="$1.zsh-theme"
+    fi
+    echo -e $BLUE"Installing themes..."$RESET
+    eval "cp $THEMES/$THEME $THEME_INSTALL_DIR"
+    echo -e $GREEN"Themes installed"$RESET
+}
+
+check_theme() {
+    
+}
+
 if [ -n "$NEW_THEME" ]; then
+    install_themes $NEW_THEME
+
     echo -e $BLUE"Activating '$NEW_THEME' theme..."$RESET
     OLD_THEME=$(grep '^ZSH_THEME=' $ZSH_CONFIG| sed 's/\"/\\\"/g')
     eval "sed -i 's/$OLD_THEME/ZSH_THEME=\"$NEW_THEME\"/' $ZSH_CONFIG"
     echo -e $GREEN"Theme activated. Please restart the terminal."$RESET
+else
+    install_themes
 fi
