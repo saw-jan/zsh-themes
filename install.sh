@@ -8,8 +8,8 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 RESET='\033[0m'
 
-FONTS="./fonts"
-THEMES="./themes"
+FONTS_DIR="./fonts"
+THEMES_DIR="./themes"
 FONT_INSTALL_DIR="$HOME/.local/share/fonts"
 THEME_INSTALL_DIR="$HOME/.oh-my-zsh/themes"
 ZSH_CONFIG="$HOME/.zshrc"
@@ -46,7 +46,7 @@ done
 
 if [[ $SKIP_FONTS == 'false' ]]; then
     echo -e $BLUE"Installing fonts..."$RESET
-    eval "find $FONTS -name '*.[o,t]t[fc]' -type f -print0 | xargs -0 -I % cp '%' $FONT_INSTALL_DIR"
+    eval "find $FONTS_DIR -name '*.[o,t]t[fc]' -type f -print0 | xargs -0 -I % cp '%' $FONT_INSTALL_DIR"
     # Reset font cache 
     if command -v fc-cache @>/dev/null ; then
         fc-cache -f $FONT_INSTALL_DIR
@@ -60,15 +60,23 @@ install_themes() {
         THEME="$1.zsh-theme"
     fi
     echo -e $BLUE"Installing themes..."$RESET
-    eval "cp $THEMES/$THEME $THEME_INSTALL_DIR"
+    eval "cp $THEMES_DIR/$THEME $THEME_INSTALL_DIR"
     echo -e $GREEN"Themes installed"$RESET
 }
 
 check_theme() {
-    
+    themes_list=$(ls $THEMES_DIR)
+    if ! [[ $themes_list =~ $1".zsh-theme" ]]; then
+        list=$(echo $themes_list | sed 's/ /\\n /g')
+        echo -e $RED"Cannot find '$1' theme"
+        echo -e $WHITE"Available themes:"
+        echo -e " "$list
+        exit 1
+    fi
 }
 
 if [ -n "$NEW_THEME" ]; then
+    check_theme $NEW_THEME
     install_themes $NEW_THEME
 
     echo -e $BLUE"Activating '$NEW_THEME' theme..."$RESET
