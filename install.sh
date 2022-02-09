@@ -10,7 +10,7 @@ RESET='\033[0m'
 
 FONTS_DIR="./fonts"
 THEMES_DIR="./themes"
-FONT_INSTALL_DIR="$HOME/.local/share/fonts"
+FONT_INSTALL_DIR="$HOME/.local/share/fonts/"
 THEME_INSTALL_DIR="$HOME/.oh-my-zsh/themes"
 ZSH_CONFIG="$HOME/.zshrc"
 
@@ -50,6 +50,7 @@ done
 
 if [[ $SKIP_FONTS == 'false' ]]; then
     echo -e $BLUE"Installing fonts..."$RESET
+    eval "mkdir -p $FONT_INSTALL_DIR"
     eval "find $FONTS_DIR -name '*.[o,t]t[fc]' -type f -print0 | xargs -0 -I % cp '%' $FONT_INSTALL_DIR"
     # Reset font cache 
     if command -v fc-cache @>/dev/null ; then
