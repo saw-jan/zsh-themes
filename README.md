@@ -25,3 +25,13 @@ Installing themes:
    # install and activate specific theme
    ./install.sh -t uown
    ```
+
+### Themes
+
+1. kinsae
+
+   ![kinsae zsh theme](./img/kinsae-theme.png)
+
+2. uown
+
+   ![uown zsh theme](./img/uwon-theme.png)
