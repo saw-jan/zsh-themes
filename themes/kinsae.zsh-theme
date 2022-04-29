@@ -1,4 +1,3 @@
-CURRENT_BG='NONE'
 # icons
 USER_ICO='\uf116'
 FOLDER_ICO='\uf115'
@@ -10,12 +9,7 @@ prompt_segment() {
     local bg fg
     [[ -n $1 ]] && bg="%K{$1}" || bg="%k"
     [[ -n $2 ]] && fg="%F{$2}" || fg="%f"
-    if [[ $CURRENT_BG != 'NONE' && $1 != $CURRENT_BG ]]; then
-        echo -n "%{$bg%}%{$fg%} "
-    else
-        echo -n "%{$bg%}%{$fg%} "
-    fi
-    CURRENT_BG=$1
+    echo -n "%{$bg%}%{$fg%} "
     [[ -n $3 ]] && echo -n $3
 }
 
@@ -40,9 +34,9 @@ prompt_git() {
         dirty=$(parse_git_dirty)
         ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git rev-parse --short HEAD 2> /dev/null)"
         if [[ -n $dirty ]]; then
-            prompt_segment None yellow
+            prompt_segment default yellow
         else
-            prompt_segment None green
+            prompt_segment default green
         fi
 
         if [[ -e "${repo_path}/BISECT_LOG" ]]; then
@@ -74,9 +68,9 @@ prompt_dir() {
     DIR=$(pwd)
     HOME=$(echo ~)
     if [ $DIR = $HOME ] || [ $DIR = '/' ]; then
-        prompt_segment None default "$FOLDER_ICO  %~"
+        prompt_segment default default "$FOLDER_ICO  %~"
     else
-        prompt_segment None default "$FOLDER_ICO  %1~"
+        prompt_segment default default "$FOLDER_ICO  %1~"
     fi
 }
 
@@ -104,14 +98,14 @@ prompt_nodejs() {
         node_ver=$(node -v |cut -c 1-3)
         package_ver=$(grep '"version"' package.json | cut -d ':' -f 2 | tr -d '",')
         if [ $node_ver ]; then
-            prompt_segment None green $NODE_ICO" "$node_ver
-            prompt_segment None cyan $PACKAGE_ICO""$package_ver
+            prompt_segment default green $NODE_ICO" "$node_ver
+            prompt_segment default cyan $PACKAGE_ICO""$package_ver
         fi
     fi
 }
 
 prompt_indicator() {
-    prompt_segment None '' $'\e[90m\n\u2514\e[0m '
+    prompt_segment default default "\e[90m\n\u2514%F{default} "
 }
 
 ## Main prompt
