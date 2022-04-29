@@ -100,8 +100,8 @@ prompt_status() {
 
 prompt_nodejs() {
     is_nodeapp=$(find . -maxdepth 1 -name package.json)
-    node_ver=$(node -v |cut -c 1-3)
     if [ $is_nodeapp ]; then
+        node_ver=$(node -v |cut -c 1-3)
         package_ver=$(grep '"version"' package.json | cut -d ':' -f 2 | tr -d '",')
         if [ $node_ver ]; then
             prompt_segment None green $NODE_ICO" "$node_ver
@@ -111,7 +111,7 @@ prompt_nodejs() {
 }
 
 prompt_indicator() {
-   prompt_segment None '' $'\e[90m\n\u2514 '
+   prompt_segment None '' $'\e[90m\n\u2514\e[0m '
 }
 
 ## Main prompt
